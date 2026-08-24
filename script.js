@@ -1,3 +1,33 @@
+// ============ API CONFIGURATION ============
+const API_URL = "https://campcfcback-production.up.railway.app";
+
+// ============ LOAD CUPOS ON PAGE LOAD ============
+async function loadCupos() {
+  try {
+    const response = await fetch(`${API_URL}/api/inscripciones`);
+    if (!response.ok) throw new Error('No se pudo obtener los cupos');
+    const data = await response.json();
+    const cuposNum = document.getElementById('cupos-num');
+    if (cuposNum) {
+      cuposNum.dataset.target = data.cuposDisponibles;
+      // Si el elemento es visible, animar el contador
+      if (isElementInViewport(cuposNum)) {
+        animateCount(cuposNum, data.cuposDisponibles, 1200);
+      }
+    }
+  } catch (error) {
+    console.error('Error cargando cupos:', error);
+  }
+}
+
+function isElementInViewport(el) {
+  const rect = el.getBoundingClientRect();
+  return rect.top >= 0 && rect.bottom <= window.innerHeight;
+}
+
+// Cargar cupos cuando se carga la página
+window.addEventListener('load', loadCupos);
+
 // ============ SCROLL REVEALS ============
 const revealEls = document.querySelectorAll('.reveal');
 const trailMap = document.querySelector('.trail-map');
@@ -63,23 +93,66 @@ const submitBtn = document.getElementById('submit-btn');
 const status = document.getElementById('form-status');
 
 if (form) {
-  form.addEventListener('submit', (e) => {
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
+    
     if (!form.checkValidity()) {
       form.reportValidity();
       return;
     }
+
+    // Recopilar datos del formulario
+    const formData = new FormData(form);
+    const datos = {
+      nombre: formData.get('nombre'),
+      edad: parseInt(formData.get('edad'), 10),
+      telefono: formData.get('telefono'),
+      iglesia: formData.get('iglesia'),
+      contacto_nombre: formData.get('contacto_nombre'),
+      contacto_telefono: formData.get('contacto_telefono'),
+      talla: formData.get('talla'),
+      alergias: formData.get('alergias') || '',
+      notas: formData.get('notas') || '',
+    };
+
     submitBtn.disabled = true;
     submitBtn.textContent = 'Enviando...';
     status.textContent = '';
     status.className = 'form-status';
 
-    setTimeout(() => {
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'Confirmar inscripción →';
-      status.textContent = '¡Inscripción recibida! Te contactaremos pronto para confirmar el pago.';
+    try {
+      const response = await fetch(`${API_URL}/api/inscripciones`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(datos),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Error al guardar la inscripción');
+      }
+
+      // Éxito
+      status.textContent = `¡Inscripción recibida! Te contactaremos pronto para confirmar el pago. Cupos disponibles: ${result.cuposDisponibles}`;
       status.className = 'form-status ok';
       form.reset();
-    }, 900);
+
+      // Actualizar cupos en tiempo real
+      const cuposNum = document.getElementById('cupos-num');
+      if (cuposNum) {
+        cuposNum.textContent = result.cuposDisponibles;
+      }
+
+    } catch (error) {
+      console.error('Error:', error);
+      status.textContent = `Error: ${error.message}`;
+      status.className = 'form-status error';
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Confirmar inscripción →';
+    }
   });
 }
