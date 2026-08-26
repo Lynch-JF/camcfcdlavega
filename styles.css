@@ -57,7 +57,6 @@ em{ font-style: italic; color: var(--gold-dark); }
 .trail-stops .reveal:nth-child(1){ transition-delay: 0.02s; }
 .trail-stops .reveal:nth-child(2){ transition-delay: 0.12s; }
 .trail-stops .reveal:nth-child(3){ transition-delay: 0.22s; }
-.trail-stops .reveal:nth-child(4){ transition-delay: 0.32s; }
 
 /* ============ TOPBAR ============ */
 .topbar{
@@ -100,7 +99,7 @@ em{ font-style: italic; color: var(--gold-dark); }
 /* ============ HERO ============ */
 .hero{
   position: relative;
-  min-height: 700px;
+  min-height: 660px;
   background: linear-gradient(180deg, #0D2B52 0%, var(--navy) 55%, var(--navy) 100%);
   overflow: hidden;
   display:flex; align-items: flex-end;
@@ -125,9 +124,6 @@ em{ font-style: italic; color: var(--gold-dark); }
 .hero-stars circle:nth-child(4){ animation-delay: 1.6s; }
 .hero-stars circle:nth-child(5){ animation-delay: 2.1s; }
 .hero-stars circle:nth-child(6){ animation-delay: 0.8s; }
-.hero-stars circle:nth-child(7){ animation-delay: 1.3s; }
-.hero-stars circle:nth-child(8){ animation-delay: 1.9s; }
-.hero-stars circle:nth-child(9){ animation-delay: 0.3s; }
 @keyframes twinkle{
   0%, 100%{ opacity: 0.25; }
   50%{ opacity: 1; }
@@ -144,35 +140,6 @@ em{ font-style: italic; color: var(--gold-dark); }
   0%, 100%{ transform: translate(760px,60px) rotate(0deg); }
   50%{ transform: translate(790px,40px) rotate(-3deg); }
 }
-
-/* ============ FLOATING LIGHT PARTICLES ============ */
-.light-particles{
-  position: absolute; inset: 0; z-index: 1; pointer-events: none; overflow: hidden;
-}
-.particle{
-  position: absolute; bottom: -20px;
-  width: 6px; height: 6px; border-radius: 50%;
-  background: radial-gradient(circle, rgba(227,167,60,0.95) 0%, rgba(227,167,60,0) 70%);
-  box-shadow: 0 0 8px 2px rgba(227,167,60,0.5);
-  animation: floatUp linear infinite;
-  opacity: 0;
-}
-.particle.p1{ left: 8%;  width: 5px; height: 5px; animation-duration: 9s;  animation-delay: 0.2s; }
-.particle.p2{ left: 20%; width: 3px; height: 3px; animation-duration: 12s; animation-delay: 2.4s; }
-.particle.p3{ left: 34%; width: 7px; height: 7px; animation-duration: 10s; animation-delay: 1.1s; }
-.particle.p4{ left: 48%; width: 4px; height: 4px; animation-duration: 14s; animation-delay: 3.6s; }
-.particle.p5{ left: 62%; width: 6px; height: 6px; animation-duration: 8s;  animation-delay: 0.8s; }
-.particle.p6{ left: 74%; width: 3px; height: 3px; animation-duration: 11s; animation-delay: 4.2s; }
-.particle.p7{ left: 86%; width: 5px; height: 5px; animation-duration: 13s; animation-delay: 2s; }
-.particle.p8{ left: 94%; width: 4px; height: 4px; animation-duration: 9.5s; animation-delay: 1.6s; }
-@keyframes floatUp{
-  0%{ transform: translateY(0) translateX(0); opacity: 0; }
-  10%{ opacity: 0.9; }
-  50%{ transform: translateY(-260px) translateX(14px); }
-  90%{ opacity: 0.5; }
-  100%{ transform: translateY(-540px) translateX(-10px); opacity: 0; }
-}
-.light-particles-dark{ position: absolute; }
 
 .hero-content{
   position: relative; z-index: 2;
@@ -192,23 +159,6 @@ em{ font-style: italic; color: var(--gold-dark); }
   text-transform: uppercase; letter-spacing: 0.14em; font-size: 0.75rem;
   margin-bottom: 18px;
   opacity: 0; animation: fadeUp 0.8s var(--ease) 0.24s forwards;
-}
-.theme-badge{
-  display: inline-block;
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--gold);
-  border: 1px solid rgba(227,167,60,0.5);
-  border-radius: 999px;
-  padding: 6px 16px;
-  margin-bottom: 20px;
-  opacity: 0; animation: fadeUp 0.8s var(--ease) 0.18s forwards, badgeGlow 3.2s ease-in-out 1.2s infinite;
-}
-@keyframes badgeGlow{
-  0%, 100%{ box-shadow: 0 0 0 0 rgba(227,167,60,0); }
-  50%{ box-shadow: 0 0 14px 2px rgba(227,167,60,0.35); }
 }
 .hero-title{ overflow: hidden; }
 .hero-title .line{
@@ -291,30 +241,6 @@ em{ font-style: italic; color: var(--gold-dark); }
 @keyframes fadeUp{
   from{ opacity: 0; transform: translateY(16px); }
   to{ opacity: 1; transform: translateY(0); }
-}
-
-/* ============ VERSE RIBBON (marquee) ============ */
-.verse-ribbon{
-  background: var(--navy-2);
-  overflow: hidden;
-  padding: 12px 0;
-  border-top: 1px solid rgba(227,167,60,0.25);
-  border-bottom: 1px solid rgba(227,167,60,0.25);
-}
-.verse-ribbon-track{
-  display: inline-flex;
-  white-space: nowrap;
-  gap: 18px;
-  font-family: var(--font-mono);
-  font-size: 0.78rem;
-  letter-spacing: 0.03em;
-  color: rgba(252,249,240,0.75);
-  animation: ribbonScroll 34s linear infinite;
-}
-.verse-ribbon-track span:nth-of-type(odd):not(:first-child){ color: var(--gold); }
-@keyframes ribbonScroll{
-  from{ transform: translateX(0); }
-  to{ transform: translateX(-50%); }
 }
 
 /* ============ WOOD DIVIDER ============ */
@@ -405,8 +331,7 @@ em{ font-style: italic; color: var(--gold-dark); }
   box-shadow: 0 18px 34px -18px rgba(11,37,69,0.35);
   border-color: rgba(46,111,190,0.3);
 }
-.about-icon{ font-size: 1.8rem; display:block; margin-bottom: 14px; transition: transform 0.3s var(--ease); }
-.about-card:hover .about-icon{ transform: scale(1.15) rotate(-4deg); }
+.about-icon{ font-size: 1.8rem; display:block; margin-bottom: 14px; }
 .about-card h3{ font-size: 1.05rem; margin-bottom: 8px; }
 .about-card p{ color: var(--ink-soft); font-size: 0.92rem; }
 
@@ -453,11 +378,6 @@ em{ font-style: italic; color: var(--gold-dark); }
   background: linear-gradient(160deg, var(--azure), var(--navy-2));
   margin: 0 auto 18px;
   box-shadow: 0 0 0 1px rgba(252,249,240,0.18);
-  animation: badgePulse 3.6s ease-in-out infinite;
-}
-@keyframes badgePulse{
-  0%, 100%{ box-shadow: 0 0 0 1px rgba(252,249,240,0.18), 0 0 0 0 rgba(227,167,60,0); }
-  50%{ box-shadow: 0 0 0 1px rgba(252,249,240,0.18), 0 0 16px 3px rgba(227,167,60,0.35); }
 }
 .pastor-card h3{ color: var(--paper); font-size: 1.28rem; }
 .pastor-title{
@@ -493,6 +413,11 @@ em{ font-style: italic; color: var(--gold-dark); }
 .trail-stops{
   display:grid; grid-template-columns: repeat(4,1fr); gap: 22px;
 }
+.trail-stops-3{
+  grid-template-columns: repeat(3,1fr);
+  max-width: 920px;
+  margin: 0 auto;
+}
 .trail-stop{
   background: var(--cream);
   border: 1px solid var(--line);
@@ -510,9 +435,7 @@ em{ font-style: italic; color: var(--gold-dark); }
   width: 44px; height:44px; border-radius: 50%;
   background: var(--navy); font-size: 1.2rem;
   margin-bottom: 16px;
-  transition: transform 0.3s var(--ease);
 }
-.trail-stop:hover .stop-marker{ transform: scale(1.12) rotate(-6deg); }
 .stop-day{
   font-family: var(--font-mono); font-size: 0.75rem; color: var(--azure);
   text-transform: uppercase; letter-spacing: 0.06em;
@@ -622,12 +545,14 @@ textarea{ resize: vertical; }
 @media (max-width: 860px){
   .about-grid{ grid-template-columns: 1fr 1fr; }
   .trail-stops{ grid-template-columns: 1fr 1fr; }
+  .trail-stops-3{ grid-template-columns: 1fr 1fr; }
   .details-inner{ grid-template-columns: 1fr; }
   .form-row-split{ grid-template-columns: 1fr; }
 }
 @media (max-width: 560px){
   .about-grid{ grid-template-columns: 1fr; }
   .trail-stops{ grid-template-columns: 1fr; }
+  .trail-stops-3{ grid-template-columns: 1fr; }
   .pastors-grid{ grid-template-columns: 1fr; }
   .topnav{ display:none; }
   .hero-content{ padding-top: 120px; }
@@ -637,7 +562,7 @@ textarea{ resize: vertical; }
 @media (prefers-reduced-motion: reduce){
   html{ scroll-behavior: auto; }
   .btn-ember{ transition: none; }
-  .hero-sun, .hero-stars circle, .dove, .hero-logo, .eyebrow, .theme-badge, .hero-title .line, .hero-sub, .hero-verse, .hero-facts, .btn-ember, .particle, .flame, .flame-glow, .pastor-badge, .verse-ribbon-track{
+  .hero-sun, .hero-stars circle, .dove, .hero-logo, .eyebrow, .hero-title .line, .hero-sub, .hero-verse, .hero-facts, .btn-ember, .flame, .flame-glow{
     animation: none !important; opacity: 1 !important; transform: none !important;
   }
   .reveal{ opacity: 1; transform: none; transition: none; }
