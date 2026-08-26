@@ -87,6 +87,50 @@ function animateCount(el, target, duration) {
   requestAnimationFrame(tick);
 }
 
+// ============ VERSE TYPEWRITER ============
+// Anima el versículo destacado como si se escribiera a mano, la primera vez
+// que entra en pantalla.
+const typewriterEls = document.querySelectorAll('.verse-typewriter');
+
+if (typewriterEls.length) {
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  typewriterEls.forEach((el) => {
+    const fullText = el.dataset.text || el.textContent;
+    if (!prefersReduced) el.textContent = '';
+
+    const typeObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          if (prefersReduced) {
+            el.textContent = fullText;
+          } else {
+            typeText(el, fullText, 32);
+          }
+          typeObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.5 });
+
+    typeObserver.observe(el);
+  });
+}
+
+function typeText(el, text, speed) {
+  let i = 0;
+  el.classList.add('typing');
+  function step() {
+    if (i <= text.length) {
+      el.textContent = text.slice(0, i);
+      i++;
+      setTimeout(step, speed);
+    } else {
+      el.classList.remove('typing');
+    }
+  }
+  step();
+}
+
 // ============ FORM SUBMIT ============
 const form = document.getElementById('camp-form');
 const submitBtn = document.getElementById('submit-btn');
@@ -110,7 +154,6 @@ if (form) {
       iglesia: formData.get('iglesia'),
       contacto_nombre: formData.get('contacto_nombre'),
       contacto_telefono: formData.get('contacto_telefono'),
-      talla: formData.get('talla'),
       alergias: formData.get('alergias') || '',
       notas: formData.get('notas') || '',
     };
