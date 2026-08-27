@@ -26,6 +26,7 @@
       <a href="#pastores">Pastores</a>
       <a href="#itinerario">Itinerario</a>
       <a href="#detalles">Detalles</a>
+      <a href="#inscritos">Inscritos</a>
       <a href="#inscripcion" class="nav-cta">Inscribirme</a>
     </nav>
   </div>
@@ -73,7 +74,7 @@
     <div class="hero-facts">
       <div><span class="hero-fact-num">4–6</span><span class="hero-fact-label">septiembre 2026</span></div>
       <div><span class="hero-fact-num">Rancho Bethel</span><span class="hero-fact-label">Centro de retiro</span></div>
-      <div><span class="hero-fact-num">RD$2,500</span><span class="hero-fact-label">todo incluido</span></div>
+      <div><span class="hero-fact-num">RD$800</span><span class="hero-fact-label">todo incluido</span></div>
     </div>
     <a href="#inscripcion" class="btn-ember">Reservar mi cupo →</a>
   </div>
@@ -193,7 +194,7 @@
     <div class="details-copy reveal">
       <h2>Lo que necesitas saber</h2>
       <ul class="details-list">
-        <li><strong>Costo:</strong> RD$2,500 por persona (incluye hospedaje, comidas y actividades).</li>
+        <li><strong>Costo:</strong> RD$800 por persona (incluye hospedaje, comidas y actividades).</li>
         <li><strong>Cupo:</strong> 120 personas — inscripción por orden de llegada.</li>
         <li><strong>Edad mínima:</strong> 13 años. Menores de 18 requieren autorización firmada.</li>
         <li><strong>Sin merchandising este año:</strong> no habrá camisetas ni recuerdos; ese presupuesto se destinó por completo a actividades y tiempo de calidad.</li>
@@ -205,6 +206,51 @@
       <span class="details-card-label">Cupos disponibles</span>
       <span class="details-card-num" id="cupos-num" data-target="120">0</span>
       <span class="details-card-foot">se actualiza al inscribirte</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ INSCRITOS Y PAGOS (PROTEGIDO) ============ -->
+<section id="inscritos" class="section-admin">
+  <div class="wood-divider" aria-hidden="true"></div>
+  <div class="admin-inner">
+    <h2 class="reveal">Inscritos y pagos</h2>
+    <p class="admin-sub reveal">Apartado privado del ministerio. Ingresa la contraseña para ver la lista de inscritos y su estatus de pago.</p>
+
+    <form id="admin-gate" class="admin-gate reveal" novalidate>
+      <div class="form-row">
+        <label for="admin-pass">Contraseña</label>
+        <input type="password" id="admin-pass" name="admin-pass" required placeholder="••••••••" autocomplete="off">
+      </div>
+      <button type="submit" class="btn-ember btn-submit">Entrar →</button>
+      <p class="form-status" id="admin-status" role="status" aria-live="polite"></p>
+    </form>
+
+    <div class="admin-panel reveal" id="admin-panel" hidden>
+      <div class="admin-toolbar">
+        <span class="admin-count" id="admin-count">Cargando inscritos...</span>
+        <div class="admin-toolbar-actions">
+          <button type="button" class="btn-ghost" id="admin-refresh">Actualizar</button>
+          <button type="button" class="btn-ghost" id="admin-logout">Salir</button>
+        </div>
+      </div>
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Edad</th>
+              <th>Teléfono</th>
+              <th>Iglesia</th>
+              <th>Pago</th>
+            </tr>
+          </thead>
+          <tbody id="admin-tbody">
+            <!-- filas cargadas por script.js -->
+          </tbody>
+        </table>
+      </div>
+      <p class="admin-note">Nota: esta lista se llena con los datos que devuelva el sistema de inscripciones. Si el estatus de pago no aparece, hay que confirmarlo manualmente hasta que el backend lo incluya.</p>
     </div>
   </div>
 </section>
