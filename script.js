@@ -131,7 +131,7 @@ function typeText(el, text, speed) {
   step();
 }
 
-// ============ FORM SUBMIT ============
+// ============ FORM SUBMIT (INSCRIPCIÓN) ============
 const form = document.getElementById('camp-form');
 const submitBtn = document.getElementById('submit-btn');
 const status = document.getElementById('form-status');
@@ -139,7 +139,7 @@ const status = document.getElementById('form-status');
 if (form) {
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    
+
     if (!form.checkValidity()) {
       form.reportValidity();
       return;
@@ -198,4 +198,158 @@ if (form) {
       submitBtn.textContent = 'Confirmar inscripción →';
     }
   });
+}
+
+// ============ INSCRITOS Y PAGOS (PANEL PROTEGIDO) ============
+// Nota de seguridad: esto es una contraseña simple del lado del cliente,
+// pensada para que curiosos casuales no vean la lista al abrir la página.
+// No es cifrado real ni protección contra alguien que revise el código
+// fuente. Si se necesita seguridad de verdad, el filtrado debe hacerse
+// en el backend (con login y token), no solo en el navegador.
+const ADMIN_PASSWORD = 'juan316';
+const ADMIN_SESSION_KEY = 'campo_admin_unlocked';
+
+const adminGateForm = document.getElementById('admin-gate');
+const adminPassInput = document.getElementById('admin-pass');
+const adminStatus = document.getElementById('admin-status');
+const adminPanel = document.getElementById('admin-panel');
+const adminTbody = document.getElementById('admin-tbody');
+const adminCount = document.getElementById('admin-count');
+const adminRefreshBtn = document.getElementById('admin-refresh');
+const adminLogoutBtn = document.getElementById('admin-logout');
+
+function unlockAdminPanel() {
+  if (adminGateForm) adminGateForm.hidden = true;
+  if (adminPanel) adminPanel.hidden = false;
+  cargarInscritos();
+}
+
+function lockAdminPanel() {
+  sessionStorage.removeItem(ADMIN_SESSION_KEY);
+  if (adminPanel) adminPanel.hidden = true;
+  if (adminGateForm) {
+    adminGateForm.hidden = false;
+    adminGateForm.reset();
+  }
+  if (adminStatus) {
+    adminStatus.textContent = '';
+    adminStatus.className = 'form-status';
+  }
+}
+
+if (adminGateForm) {
+  // Si ya se desbloqueó antes en esta sesión del navegador, no pedir de nuevo.
+  if (sessionStorage.getItem(ADMIN_SESSION_KEY) === '1') {
+    unlockAdminPanel();
+  }
+
+  adminGateForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const intento = adminPassInput.value.trim();
+
+    if (intento === ADMIN_PASSWORD) {
+      sessionStorage.setItem(ADMIN_SESSION_KEY, '1');
+      adminStatus.textContent = '';
+      unlockAdminPanel();
+    } else {
+      adminStatus.textContent = 'Contraseña incorrecta. Intenta de nuevo.';
+      adminStatus.className = 'form-status error';
+      adminPassInput.value = '';
+      adminPassInput.focus();
+    }
+  });
+}
+
+if (adminRefreshBtn) {
+  adminRefreshBtn.addEventListener('click', cargarInscritos);
+}
+
+if (adminLogoutBtn) {
+  adminLogoutBtn.addEventListener('click', lockAdminPanel);
+}
+
+// Intenta encontrar el estatus de pago sin importar el nombre exacto del
+// campo que use el backend (pagado, pago, estatus_pago, etc.).
+function resolverEstatusPago(inscrito) {
+  const posibles = ['pagado', 'pago', 'ha_pagado', 'estatus_pago', 'pago_confirmado', 'isPaid'];
+  for (const campo of posibles) {
+    if (Object.prototype.hasOwnProperty.call(inscrito, campo)) {
+      const valor = inscrito[campo];
+      if (typeof valor === 'boolean') return valor ? 'si' : 'no';
+      if (typeof valor === 'string') {
+        const v = valor.toLowerCase();
+        if (['si', 'sí', 'true', 'pagado', 'confirmado'].includes(v)) return 'si';
+        if (['no', 'false', 'pendiente'].includes(v)) return 'no';
+      }
+    }
+  }
+  return 'desconocido';
+}
+
+// La respuesta de /api/inscripciones puede venir en distintas formas según
+// el backend; probamos las más comunes para encontrar el listado.
+function extraerListaInscritos(data) {
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data.inscripciones)) return data.inscripciones;
+  if (Array.isArray(data.inscritos)) return data.inscritos;
+  if (Array.isArray(data.data)) return data.data;
+  return null;
+}
+
+async function cargarInscritos() {
+  if (!adminTbody) return;
+  adminCount.textContent = 'Cargando inscritos...';
+  adminTbody.innerHTML = '';
+
+  try {
+    const response = await fetch(`${API_URL}/api/inscripciones`);
+    if (!response.ok) throw new Error('No se pudo obtener la lista de inscritos');
+    const data = await response.json();
+    const lista = extraerListaInscritos(data);
+
+    if (!lista) {
+      adminCount.textContent = '';
+      adminTbody.innerHTML = `<tr><td colspan="5" class="admin-empty">
+        El sistema todavía no devuelve el listado completo de inscritos (solo los cupos disponibles).
+        Hay que pedirle al backend un endpoint que entregue nombre, teléfono, iglesia y estatus de pago
+        de cada persona para poder mostrarlo aquí.
+      </td></tr>`;
+      return;
+    }
+
+    if (lista.length === 0) {
+      adminCount.textContent = '0 inscritos por ahora';
+      adminTbody.innerHTML = `<tr><td colspan="5" class="admin-empty">Todavía no hay inscritos.</td></tr>`;
+      return;
+    }
+
+    const pagados = lista.filter((i) => resolverEstatusPago(i) === 'si').length;
+    adminCount.textContent = `${lista.length} inscritos · ${pagados} pagados`;
+
+    adminTbody.innerHTML = lista.map((inscrito) => {
+      const estatus = resolverEstatusPago(inscrito);
+      const pillClass = estatus === 'si' ? 'pago-si' : estatus === 'no' ? 'pago-no' : 'pago-desconocido';
+      const pillTexto = estatus === 'si' ? 'Pagado' : estatus === 'no' ? 'Pendiente' : 'Sin dato';
+      return `
+        <tr>
+          <td>${escapeHtml(inscrito.nombre || '—')}</td>
+          <td>${escapeHtml(inscrito.edad != null ? String(inscrito.edad) : '—')}</td>
+          <td>${escapeHtml(inscrito.telefono || '—')}</td>
+          <td>${escapeHtml(inscrito.iglesia || '—')}</td>
+          <td><span class="pago-pill ${pillClass}">${pillTexto}</span></td>
+        </tr>
+      `;
+    }).join('');
+
+  } catch (error) {
+    console.error('Error cargando inscritos:', error);
+    adminCount.textContent = '';
+    adminTbody.innerHTML = `<tr><td colspan="5" class="admin-empty">Error al cargar los inscritos: ${escapeHtml(error.message)}</td></tr>`;
+  }
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = String(str);
+  return div.innerHTML;
 }
